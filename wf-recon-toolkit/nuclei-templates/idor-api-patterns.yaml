@@ -1,0 +1,53 @@
+id: idor-api-patterns
+
+info:
+  name: IDOR/BOLA Pattern Detection in API Responses
+  author: wf-recon-toolkit
+  severity: info
+  description: |
+    Identifies API endpoints that return user-specific data with predictable IDs.
+    These need MANUAL verification - test by changing the ID parameter with
+    a different authenticated session.
+  tags: idor,bola,api,recon
+
+http:
+  # Pattern 1: Numeric ID in path
+  - method: GET
+    path:
+      - "{{BaseURL}}/api/user/1"
+      - "{{BaseURL}}/api/v1/user/1"
+      - "{{BaseURL}}/api/v2/user/1"
+      - "{{BaseURL}}/api/account/1"
+      - "{{BaseURL}}/api/v1/account/1"
+      - "{{BaseURL}}/api/profile/1"
+      - "{{BaseURL}}/api/v1/profile/1"
+      - "{{BaseURL}}/api/users/1"
+      - "{{BaseURL}}/api/accounts/1"
+      - "{{BaseURL}}/api/documents/1"
+      - "{{BaseURL}}/api/statements/1"
+      - "{{BaseURL}}/api/transactions/1"
+      - "{{BaseURL}}/api/messages/1"
+      - "{{BaseURL}}/api/notifications/1"
+      - "{{BaseURL}}/api/transfers/1"
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+          - 401
+          - 403
+
+      - type: word
+        part: header
+        words:
+          - "application/json"
+          - "application/xml"
+        condition: or
+
+    extractors:
+      - type: regex
+        part: body
+        regex:
+          - '"(id|userId|accountId|account_id|user_id|customerId)":\s*"?[0-9]+'
+          - '"(email|phone|ssn|address|balance|amount)"'

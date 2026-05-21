@@ -1,0 +1,51 @@
+id: exposed-spring-actuator
+
+info:
+  name: Exposed Spring Boot Actuator Endpoints
+  author: wf-recon-toolkit
+  severity: high
+  description: Detects exposed Spring Boot actuator endpoints that leak environment variables, heap dumps, and internal config
+  tags: exposure,spring,actuator,misconfiguration
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/actuator"
+      - "{{BaseURL}}/actuator/env"
+      - "{{BaseURL}}/actuator/heapdump"
+      - "{{BaseURL}}/actuator/mappings"
+      - "{{BaseURL}}/actuator/configprops"
+      - "{{BaseURL}}/actuator/beans"
+      - "{{BaseURL}}/actuator/trace"
+      - "{{BaseURL}}/actuator/httptrace"
+      - "{{BaseURL}}/actuator/threaddump"
+      - "{{BaseURL}}/manage/env"
+      - "{{BaseURL}}/manage/heapdump"
+      - "{{BaseURL}}/env"
+      - "{{BaseURL}}/heapdump"
+      - "{{BaseURL}}/mappings"
+      - "{{BaseURL}}/trace"
+
+    stop-at-first-match: true
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+
+      - type: word
+        words:
+          - "_links"
+          - "activeProfiles"
+          - "propertySources"
+          - "systemProperties"
+          - "requestMappings"
+          - "beans"
+          - "contexts"
+        condition: or
+
+    extractors:
+      - type: regex
+        part: body
+        regex:
+          - '"(jdbc|spring\.[a-z]+|server\.[a-z]+)"'

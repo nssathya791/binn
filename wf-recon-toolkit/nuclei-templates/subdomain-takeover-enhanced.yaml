@@ -1,0 +1,128 @@
+id: subdomain-takeover-enhanced
+
+info:
+  name: Enhanced Subdomain Takeover Detection
+  author: wf-recon-toolkit
+  severity: high
+  description: Detects dangling CNAME records pointing to deprovisioned services
+  tags: takeover,cname,misconfiguration
+  reference:
+    - https://github.com/EdOverflow/can-i-take-over-xyz
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}"
+    matchers-condition: or
+    matchers:
+      # AWS S3
+      - type: word
+        words:
+          - "NoSuchBucket"
+          - "The specified bucket does not exist"
+        condition: or
+
+      # GitHub Pages
+      - type: word
+        words:
+          - "There isn't a GitHub Pages site here."
+          - "For root URLs (like http://example.com/) you must provide an index.html file"
+        condition: or
+
+      # Heroku
+      - type: word
+        words:
+          - "No such app"
+          - "no-such-app"
+          - "herokucdn.com/error-pages/no-such-app.html"
+        condition: or
+
+      # Azure
+      - type: word
+        words:
+          - "404 Web Site not found"
+          - "The resource you are looking for has been removed"
+        condition: or
+
+      # Shopify
+      - type: word
+        words:
+          - "Sorry, this shop is currently unavailable"
+          - "Only one step left!"
+        condition: or
+
+      # Fastly
+      - type: word
+        words:
+          - "Fastly error: unknown domain"
+        condition: or
+
+      # Pantheon
+      - type: word
+        words:
+          - "404 error unknown site!"
+          - "The gods are wise"
+        condition: or
+
+      # Tumblr
+      - type: word
+        words:
+          - "Whatever you were looking for doesn't currently exist at this address"
+        condition: or
+
+      # WordPress.com
+      - type: word
+        words:
+          - "Do you want to register"
+        condition: or
+
+      # Surge.sh
+      - type: word
+        words:
+          - "project not found"
+        condition: or
+
+      # Zendesk
+      - type: word
+        words:
+          - "Help Center Closed"
+        condition: or
+
+      # Unbounce
+      - type: word
+        words:
+          - "The requested URL was not found on this server"
+          - "unbouncepages.com"
+        condition: and
+
+      # Ghost.io
+      - type: word
+        words:
+          - "The thing you were looking for is no longer here"
+        condition: or
+
+      # Bitbucket
+      - type: word
+        words:
+          - "Repository not found"
+        condition: or
+
+      # Cargo Collective
+      - type: word
+        words:
+          - "If you're moving your domain away from Cargo"
+        condition: or
+
+      # Fly.io
+      - type: word
+        words:
+          - "404 Not Found" 
+        status:
+          - 404
+        condition: and
+
+      # Netlify
+      - type: word
+        words:
+          - "Not Found - Request ID"
+        condition: or

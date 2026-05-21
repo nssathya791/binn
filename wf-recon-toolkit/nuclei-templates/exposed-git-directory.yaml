@@ -1,0 +1,36 @@
+id: exposed-git-directory
+
+info:
+  name: Exposed .git Directory
+  author: wf-recon-toolkit
+  severity: high
+  description: Detects exposed .git directories that may leak source code, credentials, and internal paths
+  tags: exposure,git,misconfiguration
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/.git/config"
+      - "{{BaseURL}}/.git/HEAD"
+      - "{{BaseURL}}/.git/index"
+
+    stop-at-first-match: true
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+
+      - type: word
+        words:
+          - "[core]"
+          - "ref: refs/"
+          - "DIRC"
+        condition: or
+
+    extractors:
+      - type: regex
+        part: body
+        regex:
+          - 'url\s*=\s*(.*)'
+          - 'ref:\s*(.*)'

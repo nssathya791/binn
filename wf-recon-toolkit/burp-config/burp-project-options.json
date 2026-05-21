@@ -1,0 +1,100 @@
+{
+  "_comment": "Burp Suite Project-Level Configuration for WF Bug Bounty",
+  "_instructions": [
+    "In Burp Suite Professional:",
+    "1. File > Project Options > Load Project Options",
+    "2. Or manually configure each section as documented below",
+    "NOTE: This is a reference config - Burp's JSON format varies by version"
+  ],
+  "project_options": {
+    "connections": {
+      "platform_authentication": {
+        "prompt_on_authentication_failure": true
+      },
+      "upstream_proxy": {
+        "_comment": "Set if you need to chain through a VPN/proxy"
+      },
+      "socks_proxy": {
+        "use_socks_proxy": false
+      },
+      "timeouts": {
+        "normal": 120,
+        "open_ended_response": 120,
+        "domain_name_resolution": 30,
+        "failed_domain_name_resolution": 30
+      }
+    },
+    "http": {
+      "redirections": {
+        "follow_redirections": "in-scope only"
+      },
+      "streaming_responses": {
+        "store": true
+      }
+    },
+    "sessions": {
+      "session_handling_rules": [
+        {
+          "description": "Add H1 Headers to all in-scope requests",
+          "enabled": true,
+          "rule_actions": [
+            {
+              "type": "invoke_extension",
+              "description": "Use 'Add Custom Header' extension or manual Match & Replace"
+            }
+          ],
+          "rule_conditions": [
+            {
+              "type": "url_matches_scope"
+            }
+          ]
+        }
+      ]
+    },
+    "misc": {
+      "logging": {
+        "requests": {
+          "all_tools": true,
+          "file": "wf-burp-requests.log"
+        },
+        "responses": {
+          "all_tools": true,
+          "file": "wf-burp-responses.log"
+        }
+      },
+      "scheduled_tasks": {
+        "_comment": "Consider scheduling state saves every 30 min for large projects"
+      }
+    }
+  },
+  "user_options_reference": {
+    "connections": {
+      "match_replace_rules": [
+        {
+          "comment": "See match-replace-rules.json for the full rule set",
+          "type": "Request header",
+          "enabled": true,
+          "match": "",
+          "replace": "X-Bug-Bounty: HackerOne-YOUR_HACKERONE_USERNAME"
+        },
+        {
+          "type": "Request header",
+          "enabled": true,
+          "match": "",
+          "replace": "X-Bug-Bounty: BurpSuite"
+        }
+      ]
+    },
+    "display": {
+      "http_message_display": {
+        "font_size": 13
+      }
+    },
+    "misc": {
+      "proxy_interception": {
+        "intercept_client_requests": false,
+        "_comment": "Start with intercept OFF, use specific intercept rules"
+      }
+    }
+  }
+}

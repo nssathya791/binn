@@ -1,0 +1,130 @@
+{
+  "_comment": "Burp Suite Match & Replace Rules for Wells Fargo Bug Bounty",
+  "_instructions": [
+    "Import these rules into Burp Suite:",
+    "1. Go to Settings > Network > Connections > Match and Replace Rules (Burp 2024+)",
+    "   OR Proxy > Options > Match and Replace (older versions)",
+    "2. Add each rule manually OR use the Burp API/extension to import",
+    "3. Replace YOUR_HACKERONE_USERNAME with your actual H1 username",
+    "4. Ensure rules are ENABLED before testing"
+  ],
+  "match_replace_rules": [
+    {
+      "description": "Add H1 Bug Bounty Header (username)",
+      "enabled": true,
+      "rule_type": "Request header",
+      "match_regex": false,
+      "match_string": "",
+      "replace_string": "X-Bug-Bounty: HackerOne-YOUR_HACKERONE_USERNAME",
+      "comment": "REQUIRED by program policy on every request"
+    },
+    {
+      "description": "Add H1 Bug Bounty Header (tool identifier)",
+      "enabled": true,
+      "rule_type": "Request header",
+      "match_regex": false,
+      "match_string": "",
+      "replace_string": "X-Bug-Bounty: BurpSuite",
+      "comment": "Tool identification for deconfliction"
+    },
+    {
+      "description": "Remove duplicate X-Bug-Bounty username header",
+      "enabled": true,
+      "rule_type": "Request header",
+      "match_regex": true,
+      "match_string": "^X-Bug-Bounty: HackerOne-YOUR_HACKERONE_USERNAME\\r\\n(.*X-Bug-Bounty: HackerOne-YOUR_HACKERONE_USERNAME)",
+      "replace_string": "X-Bug-Bounty: HackerOne-YOUR_HACKERONE_USERNAME\r\n\\1",
+      "comment": "Prevent duplicate headers on repeated requests"
+    }
+  ],
+  "scope_settings": {
+    "include": [
+      {
+        "enabled": true,
+        "protocol": "https",
+        "host": "^.*\\.wellsfargo\\.com$",
+        "port": "",
+        "file": ""
+      },
+      {
+        "enabled": true,
+        "protocol": "https",
+        "host": "^connect\\.secure\\.wellsfargo\\.com$",
+        "port": "",
+        "file": ""
+      },
+      {
+        "enabled": true,
+        "protocol": "https",
+        "host": "^.*\\.wf\\.com$",
+        "port": "",
+        "file": ""
+      },
+      {
+        "enabled": true,
+        "protocol": "https",
+        "host": "^.*\\.wellsfargoadvisors\\.com$",
+        "port": "",
+        "file": ""
+      },
+      {
+        "enabled": true,
+        "protocol": "https",
+        "host": "^.*\\.mworld\\.com$",
+        "port": "",
+        "file": ""
+      },
+      {
+        "enabled": true,
+        "protocol": "https",
+        "host": "^.*\\.advisor-connection\\.com$",
+        "port": "",
+        "file": ""
+      }
+    ],
+    "exclude": [
+      {
+        "enabled": true,
+        "protocol": "any",
+        "host": "^.*\\.google\\.com$",
+        "port": "",
+        "file": ""
+      },
+      {
+        "enabled": true,
+        "protocol": "any",
+        "host": "^.*\\.gstatic\\.com$",
+        "port": "",
+        "file": ""
+      },
+      {
+        "enabled": true,
+        "protocol": "any",
+        "host": "^.*\\.googleapis\\.com$",
+        "port": "",
+        "file": ""
+      },
+      {
+        "enabled": true,
+        "protocol": "any",
+        "host": "^.*\\.doubleclick\\.net$",
+        "port": "",
+        "file": ""
+      },
+      {
+        "enabled": true,
+        "protocol": "any",
+        "host": "^.*\\.facebook\\.com$",
+        "port": "",
+        "file": ""
+      },
+      {
+        "enabled": true,
+        "protocol": "any",
+        "host": "^.*\\.cloudfront\\.net$",
+        "port": "",
+        "file": ""
+      }
+    ]
+  }
+}

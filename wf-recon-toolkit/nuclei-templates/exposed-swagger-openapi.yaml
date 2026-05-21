@@ -1,0 +1,60 @@
+id: exposed-swagger-openapi
+
+info:
+  name: Exposed Swagger/OpenAPI Documentation
+  author: wf-recon-toolkit
+  severity: medium
+  description: Detects exposed API documentation that reveals internal endpoints, parameters, and data models
+  tags: exposure,api,swagger,openapi
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/swagger-ui.html"
+      - "{{BaseURL}}/swagger-ui/"
+      - "{{BaseURL}}/swagger/index.html"
+      - "{{BaseURL}}/api-docs"
+      - "{{BaseURL}}/v2/api-docs"
+      - "{{BaseURL}}/v3/api-docs"
+      - "{{BaseURL}}/openapi.json"
+      - "{{BaseURL}}/openapi.yaml"
+      - "{{BaseURL}}/swagger.json"
+      - "{{BaseURL}}/swagger.yaml"
+      - "{{BaseURL}}/api/swagger.json"
+      - "{{BaseURL}}/api/v1/swagger.json"
+      - "{{BaseURL}}/api/v2/swagger.json"
+      - "{{BaseURL}}/docs"
+      - "{{BaseURL}}/redoc"
+      - "{{BaseURL}}/api/docs"
+      - "{{BaseURL}}/graphql"
+      - "{{BaseURL}}/graphiql"
+      - "{{BaseURL}}/playground"
+      - "{{BaseURL}}/__graphql"
+
+    stop-at-first-match: true
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+
+      - type: word
+        words:
+          - "swagger"
+          - "openapi"
+          - "\"paths\""
+          - "\"info\""
+          - "Swagger UI"
+          - "api-docs"
+          - "__schema"
+          - "queryType"
+          - "mutationType"
+          - "GraphiQL"
+        condition: or
+
+    extractors:
+      - type: regex
+        part: body
+        regex:
+          - '"(\/api\/[a-zA-Z0-9\/_{}.-]+)"'
+          - '"basePath"\s*:\s*"([^"]+)"'
